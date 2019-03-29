@@ -1,1 +1,1 @@
-Un beau readme
+Repository for ML course of Jeff
