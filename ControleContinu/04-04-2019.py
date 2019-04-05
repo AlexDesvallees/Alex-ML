@@ -1,3 +1,10 @@
+# --------------------------------------------
+# --------------------------------------------
+# ----------- Regression Lineaire ------------
+# --------------------------------------------
+# --------------------------------------------
+
+
 import sklearn
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,17 +23,17 @@ linearRegressor = LinearRegression()
 reg= linearRegressor.fit(x, y)
 
 z = linearRegressor.predict([[date_to_float(2019, 4, 4)]])[0][0]
-print("Prédiction pour le 2019-04-04 : %s" % z)
+print("Prediction pour le 2019-04-04 : %s" % z)
 
 plt.subplot(211)
 plt.scatter(x, y, color = 'red')
 plt.scatter([date_to_float(2019, 4, 4)], linearRegressor.predict([[date_to_float(2019, 4, 4)]]), color = 'purple')
 plt.plot(x, linearRegressor.predict(x), color = 'blue')
-plt.title("Courbe de regression linéaire")
+plt.title("Courbe de regression lineaire")
 
 plt.subplot(212)
 plt.scatter(x, y - linearRegressor.predict(x), color = 'red')
 plt.axhline(0, color='blue')
-plt.title("Courbe des résidus")
+plt.title("Courbe des residus")
 
 plt.show()
