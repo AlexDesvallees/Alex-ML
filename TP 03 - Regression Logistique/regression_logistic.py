@@ -67,6 +67,7 @@ for elem in test_values:
     else:
         print("NOK")
 
+# Code récupéré de Nicolas Goureau pour son explication du One Vs Rest (All)
 # def generateOvRClassifier(classes):
 #     o_vs_r_classifiers = {}
 #     for elem in classes:
