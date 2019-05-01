@@ -23,34 +23,6 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
-
-def main():
-    # On récupère notre jeux de données (jdd) digits
-    digits = datasets.load_digits()
-    data = digits['data']
-    target  = digits['target']
-    classes = set(target)
-    # On va split notre jdd en test et train
-    x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
-
-    # Création de tuples images / valeurs
-    test_values = [(x_test[index],value) for index, value in enumerate(y_test)]
-
-    # Création des classifieurs One vs One
-    o_vs_o_classifiers = generateOvOClassifier(classes, x_train, y_train)
-    # Avec la prédiction
-    predictOVO(test_values, o_vs_o_classifiers)
-    
-    # Création des classifieurs One vs Rest (ou All)
-    ovrclassifier = generateOvRClassifier(classes, x_train, y_train)
-    # Avec sa prédiction
-    predictOVR(test_values,ovrclassifier)
-
-    # Création des classifieurs Forest
-    foret_classifiers = generateForetClassifier(classes, x_train, y_train)
-    # Avec leur prédictions
-    predictForet(test_values, foret_classifiers)
-
 # --------------------------------------------
 # --------------- One Vs Rest ----------------
 # --------------------------------------------
@@ -84,7 +56,9 @@ def predictOVR(test_values, o_vs_r_classifiers):
             correct +=1
         #print("Predicted %s and value was %s" %(predicted,value))
     prct = (correct/len(results)*100)
-    print(f"The One versus Rest score a {prct} % precision score")
+    print(prct)
+    # print(f"The One versus Rest score a {prct} % precision score")
+    print("The One versus Rest score a {} % precision score".format(prct))
 
 # --------------------------------------------
 # ---------------- One Vs One ----------------
@@ -125,7 +99,8 @@ def predictOVO(test_values, o_vs_o_classifiers):
             correct += 1
         #print("Predicted %s and value was %s" %(predicted,value))
     prct = (correct/len(results)*100)
-    print(f"The One versus One score a {prct} % precision score ")
+    # print(f"The One versus One score a {prct} % precision score ")
+    print("The One versus One score a {} % precision score ".format(prct))
 
 # --------------------------------------------
 # ------------------ Forest ------------------
@@ -138,7 +113,7 @@ def generateForetClassifier(classes, x_train, y_train):
         class_invalid = [x_train[index] for index, value in enumerate(y_train) if value != elem]
         value = [1] * len(class_valid) + [0] * len(class_invalid)
         learn = class_valid + class_invalid
-        foret_classifiers["%d_rest" % elem] = RandomForestClassifier(n_estimators=40).fit(learn, value)
+        foret_classifiers["%d_rest" % elem] = RandomForestClassifier(n_estimators=10).fit(learn, value)
     return foret_classifiers
 
 def predictForet(test_values, foret_classifiers):
@@ -159,7 +134,35 @@ def predictForet(test_values, foret_classifiers):
         if int(predicted) == value:
             correct +=1
     prct = (correct/len(results)*100)
-    print(f"The Forest score a {prct} % precision score ")
+    # print(f"The Forest score a {prct} % precision score ")
+    print("The Forest score a {} % precision score ".format(prct))
+
+def main():
+    # On récupère notre jeux de données (jdd) digits
+    digits = datasets.load_digits()
+    data = digits['data']
+    target  = digits['target']
+    classes = set(target)
+    # On va split notre jdd en test et train
+    x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
+
+    # Création de tuples images / valeurs
+    test_values = [(x_test[index],value) for index, value in enumerate(y_test)]
+
+    # Création des classifieurs One vs One
+    o_vs_o_classifiers = generateOvOClassifier(classes, x_train, y_train)
+    # Avec la prédiction
+    predictOVO(test_values, o_vs_o_classifiers)
+    
+    # Création des classifieurs One vs Rest (ou All)
+    ovrclassifier = generateOvRClassifier(classes, x_train, y_train)
+    # Avec sa prédiction
+    predictOVR(test_values,ovrclassifier)
+
+    # Création des classifieurs Forest
+    foret_classifiers = generateForetClassifier(classes, x_train, y_train)
+    # Avec leur prédictions
+    predictForet(test_values, foret_classifiers)
 
 if __name__ == "__main__":
     main()
