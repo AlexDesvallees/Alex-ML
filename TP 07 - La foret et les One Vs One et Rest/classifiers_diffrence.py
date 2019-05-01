@@ -1,3 +1,5 @@
+# -*- coding: latin-1 -*-
+
 # --------------------------------------------
 # --------------------------------------------
 # ------- Code repris du calcul OvO ----------
@@ -22,7 +24,37 @@ import warnings
 warnings.warn = warn
 
 
-def generateOvRClassifier(classes):
+def main():
+    # On récupère notre jeux de données (jdd) digits
+    digits = datasets.load_digits()
+    data = digits['data']
+    target  = digits['target']
+    classes = set(target)
+    # On va split notre jdd en test et train
+    x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
+
+    # Création de tuples images / valeurs
+    test_values = [(x_test[index],value) for index, value in enumerate(y_test)]
+
+    # Création des classifieurs One vs One
+    o_vs_o_classifiers = generateOvOClassifier(classes, x_train, y_train)
+    # Avec la prédiction
+    predictOVO(test_values, o_vs_o_classifiers)
+    
+    # Création des classifieurs One vs Rest (ou All)
+    ovrclassifier = generateOvRClassifier(classes, x_train, y_train)
+    # Avec sa prédiction
+    predictOVR(test_values,ovrclassifier)
+
+    # Création des classifieurs Forest
+    foret_classifiers = generateForetClassifier(classes, x_train, y_train)
+    # Avec leur prédictions
+    predictForet(test_values, foret_classifiers)
+
+# --------------------------------------------
+# --------------- One Vs Rest ----------------
+# --------------------------------------------
+def generateOvRClassifier(classes, x_train, y_train):
     o_vs_r_classifiers = {}
     for elem in classes:
         class_valid = [x_train[index] for index, value in enumerate(y_train) if value == elem]
@@ -52,9 +84,13 @@ def predictOVR(test_values, o_vs_r_classifiers):
             correct +=1
         #print("Predicted %s and value was %s" %(predicted,value))
     prct = (correct/len(results)*100)
-    print(f"The One versus Rest score a {prct} % precision score ")
+    print(f"The One versus Rest score a {prct} % precision score")
 
-def generateOvOClassifier(classes):
+# --------------------------------------------
+# ---------------- One Vs One ----------------
+# --------------------------------------------
+
+def generateOvOClassifier(classes, x_train, y_train):
     o_vs_o_classifiers = {}
     for elem in itertools.combinations(classes,2):
         class0 = [x_train[index] for index, value in enumerate(y_train) if value == elem[0]]
@@ -91,7 +127,11 @@ def predictOVO(test_values, o_vs_o_classifiers):
     prct = (correct/len(results)*100)
     print(f"The One versus One score a {prct} % precision score ")
 
-def generateForetClassifier(classes):
+# --------------------------------------------
+# ------------------ Forest ------------------
+# --------------------------------------------
+
+def generateForetClassifier(classes, x_train, y_train):
     foret_classifiers = {}
     for elem in classes:
         class_valid = [x_train[index] for index, value in enumerate(y_train) if value == elem]
@@ -122,21 +162,4 @@ def predictForet(test_values, foret_classifiers):
     print(f"The Forest score a {prct} % precision score ")
 
 if __name__ == "__main__":
-    digits = datasets.load_digits()
-    data = digits['data']
-    target  = digits['target']
-    classes = set(target)
-    #Splitting the data to get train and test sets
-    x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
-    #Create the O v O classifiers
-    o_vs_o_classifiers = generateOvOClassifier(classes)
-    # We generate an array containing tuples (images,value)
-    test_values = [(x_test[index],value) for index, value in enumerate(y_test)]
-    # Launch the loop to predict elem in test values 
-    predictOVO(test_values, o_vs_o_classifiers)
-    ovrclassifier = generateOvRClassifier(classes)
-
-    data = predictOVR(test_values,ovrclassifier)
-
-    foret_classifiers = generateForetClassifier(classes)
-    predictForet(test_values, foret_classifiers)
+    main()
