@@ -48,14 +48,17 @@ x_train, x_test, y_train, y_test = train_test_split(myRes_X, myRes_Y, test_size 
 #print(len(myRes) - len(myRes_test))
 #print(len(myRes_train))
 
+# On attribue les classes pour du binaire
 class0 = [x_train[index] for index, value in enumerate(y_train) if value == 0]
 
 class1 = [x_train[index] for index, value in enumerate(y_train) if value == 1]
 
+# On va attribuer les valeurs pour l'apprentissage du model et faire la regression logistique dessus
 value = [0] * len(class0) + [1] * len(class1)
 learn = class0 + class1
 o_vs_o_classifiers = LogisticRegression(solver='lbfgs').fit(learn, value)
 
+# On utilise les jdd de test pour prédire le modèle
 test_values = [(x_test[index],value) for index, value in enumerate(y_test)]
 
 for elem in test_values:
